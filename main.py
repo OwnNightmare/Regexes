@@ -1,7 +1,7 @@
 import csv
 import re
 from pprint import pprint
-text = """lastname,firstname,surname,organization,position,phone,email
+text = """lastname firstname,surname,organization,position,phone,email
 Усольцев Олег Валентинович,,,ФНС,главный специалист – эксперт отдела взаимодействия с федеральными органами власти Управления налогообложения имущества и доходов физических лиц,8 (495) 913-04-78,opendata@nalog.ru
 Мартиняхин Виталий Геннадьевич,,,ФНС,,+74959130037,
 Наркаев,Вячеслав Рифхатович,,ФНС,,8 495-913-0168,
@@ -24,18 +24,21 @@ with open('phonebook_raw.csv') as f:
 with open('scratch.regexp') as f:
     regex = f.readline()
     regex2 = f.readline()
+    regex3 = f.readline()
 
 sub1 = r'+7(\2)\3-\4-\5'
 sub2 = r'+7(\2)\3-\4-\5 доб.(\6)'
+sub3 = r'\1,\2,\3,'
+names = re.compile(regex3.strip())
+print(names.findall(text))
 with_add = re.compile(regex.strip())
-print(with_add.findall(text))
 without_add = re.compile(regex2.strip())
-print(without_add.findall(text))
-
-
 res = with_add.sub(sub2, text)
-text = without_add.sub(sub1, res)
-print(text)
+res = without_add.sub(sub1, res, re.MULTILINE)
+res = names.sub(sub3, res, re.MULTILINE)
+print(res)
+
+
 
 
 
