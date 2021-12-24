@@ -2,20 +2,13 @@ import csv
 import re
 from pprint import pprint
 
-text = """lastname firstname,surname,organization,position,phone,email
-Усольцев Олег Валентинович,,,ФНС,главный специалист – эксперт отдела взаимодействия с федеральными органами власти Управления налогообложения имущества и доходов физических лиц,8 (495) 913-04-78,opendata@nalog.ru
-Мартиняхин Виталий Геннадьевич,,,ФНС,,+74959130037,
-Наркаев,Вячеслав Рифхатович,,ФНС,,8 495-913-0168,
-Мартиняхин,Виталий,Геннадьевич,ФНС,cоветник отдела Интернет проектов Управления информационных технологий,,,
-Лукина Ольга Владимировна,,,Минфин,,+7 (495) 983-36-99 доб. 2926,Olga.Lukina@minfin.ru
-Паньшин Алексей Владимирович,,,Минфин,,8(495)748-49-73,1248@minfin.ru
-Лагунцов Иван Алексеевич,,,Минфин,,+7 (495) 913-11-11 (доб. 0792),
-Лагунцов Иван,,,,,,Ivan.Laguntcov@minfin.ru"""
-
 with open('phonebook_raw.csv') as f:
     file = csv.reader(f, delimiter=',')
     file_list = list(file)
-    print(file_list)
+
+for i in range(len(file_list)):
+    file_list[i] = ','.join(file_list[i])
+text = '\n'.join(file_list)
 
 with open('scratch.regexp') as f:
     regex = f.readline()
@@ -64,6 +57,7 @@ def unite_duplicated():
     outer_list = []
     with open('new.csv') as f:
         substrings = [line.strip().split(sep=',') for line in f]
+        print(substrings)
     for index, substring in enumerate(substrings):
         step = 1
         while index + step < len(substrings):
@@ -95,12 +89,13 @@ def unite_duplicated():
                     inner_list.append(tup[0])
         outer_list.append(inner_list)
     for i in range(len(outer_list)):
-        outer_list[i] = ','.join(outer_list[i])
+        outer_list[i] = ', '.join(outer_list[i])
     return outer_list, originals, duplicates
 
 
 def make_substitutions(args, string=result):
     index = 0
+    resulting_list = []
     list_, orig_indexes, dup_indexes = args
     split_result = string.split(sep='\n')
     for i in orig_indexes:
@@ -111,12 +106,13 @@ def make_substitutions(args, string=result):
         removing_list.append(split_result[i])
     for string in removing_list:
         split_result.remove(string)
-    string = '\n'.join(split_result)
-    return string
+    for string in split_result:
+        resulting_list.append(string.split(','))
+    return resulting_list
 
 
 result = make_substitutions(unite_duplicated())
 with open('new.csv', 'w') as f:
     writer = csv.writer(f)
-    writer.writerows(list(result))
+    writer.writerows(result)
 
