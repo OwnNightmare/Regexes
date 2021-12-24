@@ -15,12 +15,6 @@ with open('phonebook_raw.csv') as f:
     file = csv.reader(f, delimiter=',')
     file_list = list(file)
 
-
-# for i in file_list:
-#     i[0] = i[0].split()
-#     i[0] = (','.join(i[0]))
-# print(file_list)
-
 with open('scratch.regexp') as f:
     regex = f.readline()
     regex2 = f.readline()
@@ -28,19 +22,50 @@ with open('scratch.regexp') as f:
 
 sub1 = r'+7(\2)\3-\4-\5'
 sub2 = r'+7(\2)\3-\4-\5 доб.(\6)'
-sub3 = r'\1,\2,\3,'
+sub3 = r'\1,\2,'
 names = re.compile(regex3.strip())
-print(names.findall(text))
 with_add = re.compile(regex.strip())
 without_add = re.compile(regex2.strip())
 res = with_add.sub(sub2, text)
 res = without_add.sub(sub1, res, re.MULTILINE)
-res = names.sub(sub3, res, re.MULTILINE)
+res = names.sub(sub3, res)
 print(res)
 
 
+#
+pack = []
+with open('new.csv') as f:
+    substrings = [line.strip().split(sep=',') for line in f]
+for index, substring in enumerate(substrings):
+    step = 1
+    while index + step < len(substrings):
+        if substrings[index][0:2] == substrings[index + step][0:2]:
+            a = index
+            b = index + step
+            tup = (a, b)
+            pack.append(tup)
+            print('got you')
+        else:
+            print(substrings[index][0:2], substrings[index + step][0:2])
+        print(index, step)
+        step += 1
+zipped_pack = []
+originals = []
+duplicates = []
+print(pack)
+for tup in pack:
+    original = tup[0]
+    duplicate = tup[1]
+    originals.append(original)
+    duplicates.append(duplicate)
+    zipped = list(zip(substrings[original], substrings[duplicate]))
+    zipped_pack.append(zipped)
+print(zipped_pack)
+for zipped in zipped_pack:
+    for tup in zipped:
+        ...
 
 
+with open('new.csv', 'w') as f:
+    f.write(res)
 
-tup = tuple()
-# print(replaced)
